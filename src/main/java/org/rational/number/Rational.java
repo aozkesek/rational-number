@@ -21,22 +21,73 @@ public class Rational extends Number implements Comparable<Rational> {
         return this.denom;
     }
 
-    private int gcd() {
-        // greatest common divider
-        int gcd = 1;
-
-
-        return gcd;
+    // lowest common multiple
+    private static int lcm(int a, int b) {
+        return (a * b) / gcd(a, b);
     }
 
-    public void Ged() {
+    // greatest common divider, 
+    // Euclid's Algorithm
+    private static int gcd(int a, int b) {
+        int rem = 0;
+        int dvs = 0;
+        int dvd = 0;
 
+        a = a < 0 ? a * -1 : a;
+        b = b < 0 ? b * -1 : b;
+
+        if (a > b) {
+            dvd = a;
+            dvs = b;     
+        } else {
+            dvd = b;
+            dvs = a;
+        }
+
+        do {
+            rem = dvd % dvs;
+            if (rem > 0) {
+                dvd = dvs;
+                dvs = rem;
+            }
+        } while(rem > 0);
+
+        return dvs;
+    }
+
+    public static int lcm(int a, int b, int... args) {
+
+        int lcm = lcm(a, b);
+        for (int i = 0; i < args.length; i++)
+            lcm = lcm(lcm, args[i]);
+
+        return lcm;
+    }
+
+    public static int gcd(int a, int b, int... args) {
+
+        int gcd = gcd(a, b);
+        for (int i = 0; i < args.length; i++)
+            gcd = gcd(gcd, args[i]);
+        
+        return gcd;
+    } 
+
+    public int ged(Rational that) {
+        return lcm(this.getDenom(), that.getDenom());
+    }
+
+    public int ged(Rational that, Rational... args) {
+        int ged = lcm(this.getDenom(), that.getDenom());
+        for (int i = 0; i < args.length; i++)
+            ged = lcm(ged, args[i].getDenom());
+        return ged;
     }
 
     public Rational add(Rational that) {
         return new Rational(this.numer * that.getDenom() + this.denom * that.getNumer()
                 , this.denom * that.getDenom());
-   }
+    }
 
     public Rational sub(Rational that) {
         return new Rational(this.numer * that.getDenom() - this.denom * that.getDenom()
@@ -61,7 +112,7 @@ public class Rational extends Number implements Comparable<Rational> {
 
         Rational that = (Rational) obj;
 
-        return this.numer * that.getDenom() == this.denom * that.getNumer();
+        return (this.numer * that.getDenom()) == (this.denom * that.getNumer());
     }
 
     @Override
@@ -70,15 +121,23 @@ public class Rational extends Number implements Comparable<Rational> {
     }
 
     @Override
-    public int compareTo(Rational rational) {
+    public int compareTo(Rational that) {
 
+        int lcm = lcm(denom, that.getDenom());
+        int thisNumer = numer * (lcm / denom);
+        int thatNumer = that.getNumer() * (lcm / that.getDenom());
 
-        return 0;
+        if (thisNumer > thatNumer)
+            return 1;
+        else if (thisNumer == thatNumer)
+            return 0;
+        else
+            return -1;
     }
 
     @Override
     public int intValue() {
-        return (int)(this.numer / this.denom);
+        return this.numer / this.denom;
     }
 
     @Override
